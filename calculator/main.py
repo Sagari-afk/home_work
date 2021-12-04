@@ -3,13 +3,11 @@ from abc import ABC
 from utils import CalculatorUtil
 
 from math import sqrt, log, fabs, sin, cos, tan
-from matplotlib.pyplot import subplots, plot, show
-from numpy import linspace
-
+from matplotlib.pyplot import subplots, plot, show, gca
+import numpy as np
 
 
 class AbsCalculator(ABC):
-
     @staticmethod
     def value_convertor_float(value) -> float:
         if not isinstance(value, float):
@@ -39,7 +37,10 @@ class AbsCalculator(ABC):
         return self.value_convertor_float(value)**2
 
     def sq_root(self, value) -> float:
-        return sqrt(self.value_convertor_float(value))
+        if value >= 0:
+            return sqrt(self.value_convertor_float(value))
+        else:
+            raise ValueError
 
 
 class CommonCalculator(AbsCalculator):
@@ -68,31 +69,35 @@ class ScientificCalculator(AbsCalculator):
 
 
 class Graphs(AbsCalculator):
-
     def sin_graph(self):
-        y = lambda x: sin(x)
-        self.graph(y)
+        y = lambda x: np.sin(x)
+        return self.graph(y)
 
     def cos_graph(self):
         y = lambda x: cos(x)
-        self.graph(y)
+        return self.graph(y)
 
     def tan_graph(self):
         y = lambda x: tan(x)
-        self.graph(y)
+        return self.graph(y)
 
     def linear_func(self, k=1, b=0):    # линейая функция
         y = lambda x: self.value_convertor_float(k)*x + self.value_convertor_float(b)
-        self.graph(y)
+        return self.graph(y)
 
     def quadratic_func(self, a=1, b=0, c=0):    # квадратичная функция
-        y = lambda x: self.value_convertor_float(a)*x + self.value_convertor_float(b)*x + self.value_convertor_float(c)
-        self.graph(y)
+        y = lambda x: self.value_convertor_float(a)*x*x + self.value_convertor_float(b)*x + self.value_convertor_float(c)
+        return self.graph(y)
 
     def graph(self, y):
         fig = subplots()
-        x = linspace(-5, 5, 100)
+        ax = gca()
+        x = np.linspace(-5, 5, 100)
         plot(x, y(x))
+        ax.spines['left'].set_position('center')
+        ax.spines['bottom'].set_position('center')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
         show()
 
 
@@ -123,6 +128,11 @@ class Calculator:
 if __name__ == '__main__':
     status = input(f'Включить калькулятор, да({CalculatorUtil.status_on}) или нет ({CalculatorUtil.status_off}): ')
     cal = Calculator(status=status)
+    print(f'10 - 5 = {cal.calculator.minus(10, 5)}')
+
     cal.change_mode('sci')
-#   print("cal.calculator: -----", cal.calculator, "Type of cal.calculator is: -----", type(cal.calculator))
-    print(cal.calculator.add(value_1=2, value_2=3))
+    print(f'логорифм с основанием 2 числа 4 = {cal.calculator.log_func(4, 2)}')
+
+    cal.change_mode('gra')
+    print('график синусоиды:')
+    cal.calculator.sin_graph()
