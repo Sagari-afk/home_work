@@ -1,6 +1,6 @@
 from abc import ABC
 
-from utils import CalculatorUtil
+from calculator.utils import CalculatorUtil
 
 from math import sqrt, log, fabs, sin, cos, tan
 from matplotlib.pyplot import subplots, plot, show, gca
@@ -104,12 +104,11 @@ class Graphs(AbsCalculator):
 class Calculator:
     calculator = CommonCalculator()
 
-    def __init__(self, status: str):
+    def __init__(self, status: str, mod: str):
         if status == CalculatorUtil.status_off:
             print('Включите калькулятор')
             raise ValueError
         elif status == CalculatorUtil.status_on:
-            mod = input(f'Выбирите тип калькулятора {CalculatorUtil.models()}: ') or CalculatorUtil.common_calc
             if mod == CalculatorUtil.common_calc:
                 calculator = self.calculator
             elif mod == CalculatorUtil.graphs_calc:
